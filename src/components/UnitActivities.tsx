@@ -10,7 +10,9 @@ import {
   HelpCircle,
   Eye,
   Type,
-  Move
+  Move,
+  Maximize2,
+  Minimize2
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -138,6 +140,7 @@ function HandwritingCanvas({
   const [pencilColor, setPencilColor] = useState("#2563eb"); // Classic blue ink
   const [hasDrawn, setHasDrawn] = useState(false);
   const [typedVal, setTypedVal] = useState("");
+  const [isFullScreen, setIsFullScreen] = useState(false);
 
   const clearCanvas = () => {
     const canvas = canvasRef.current;
@@ -299,7 +302,7 @@ function HandwritingCanvas({
       window.removeEventListener("resize", handleResize);
       clearTimeout(timer);
     };
-  }, [letter]);
+  }, [letter, isFullScreen]);
 
   const guides = strokeGuides[lowercase] || {
     capital: ["Start from bottom-left up ↗"],
@@ -395,15 +398,23 @@ function HandwritingCanvas({
         </div>
 
         {/* RIGHT PANEL: PRACTICE PENCIL BOARD */}
-        <div className="flex flex-col gap-4 p-5 bg-slate-50 rounded-2xl border border-slate-200">
-          <div className="flex justify-between items-center flex-wrap gap-2">
+        <div className={isFullScreen 
+          ? "fixed inset-0 z-50 bg-[#fffcf5] p-6 flex flex-col gap-5 overflow-hidden" 
+          : "flex flex-col gap-4 p-5 bg-slate-50 rounded-2xl border border-slate-200"
+        }>
+          <div className="flex justify-between items-center flex-wrap gap-2 pb-2 border-b border-dashed border-slate-200/60">
             <h5 className="font-black text-xs uppercase tracking-wider text-indigo-950 flex items-center gap-1.5">
               <span>Pencil Practice Board ✏️</span>
+              {isFullScreen && (
+                <span className="bg-indigo-100 text-indigo-800 text-[10px] px-2.5 py-0.5 rounded-full font-black animate-pulse">
+                  Full Screen • وضع ملء الشاشة 📺
+                </span>
+              )}
             </h5>
-            <div className="flex flex-wrap gap-1">
+            <div className="flex flex-wrap gap-1.5">
               <button
                 onClick={() => setTool("pencil")}
-                className={`p-1.5 rounded-lg border text-[11px] font-bold flex items-center gap-1 cursor-pointer transition-all ${
+                className={`p-2 rounded-xl border text-[11px] font-bold flex items-center gap-1 cursor-pointer transition-all ${
                   tool === "pencil" 
                     ? "bg-indigo-600 text-white border-indigo-700 shadow-xs" 
                     : "bg-white hover:bg-slate-100 border-slate-200 text-slate-600"
@@ -414,7 +425,7 @@ function HandwritingCanvas({
               </button>
               <button
                 onClick={() => setTool("eraser")}
-                className={`p-1.5 rounded-lg border text-[11px] font-bold flex items-center gap-1 cursor-pointer transition-all ${
+                className={`p-2 rounded-xl border text-[11px] font-bold flex items-center gap-1 cursor-pointer transition-all ${
                   tool === "eraser" 
                     ? "bg-amber-500 text-white border-amber-600 shadow-xs" 
                     : "bg-white hover:bg-slate-100 border-slate-200 text-slate-600"
@@ -425,19 +436,44 @@ function HandwritingCanvas({
               </button>
               <button
                 onClick={clearCanvas}
-                className="p-1.5 bg-white hover:bg-rose-50 border border-slate-200 hover:border-rose-200 text-slate-500 hover:text-rose-600 rounded-lg text-[11px] font-bold cursor-pointer transition-all"
+                className="p-2 bg-white hover:bg-rose-50 border border-slate-200 hover:border-rose-200 text-slate-500 hover:text-rose-600 rounded-xl text-[11px] font-bold cursor-pointer transition-all"
                 title="Clear All"
               >
                 <span>🧹 Clear</span>
+              </button>
+              <button
+                onClick={() => setIsFullScreen(!isFullScreen)}
+                className={`p-2 rounded-xl border text-[11px] font-bold flex items-center gap-1.5 cursor-pointer transition-all ${
+                  isFullScreen 
+                    ? "bg-rose-500 text-white border-rose-600 hover:bg-rose-600 shadow-xs" 
+                    : "bg-indigo-50 hover:bg-indigo-100 border-indigo-200 text-indigo-700"
+                }`}
+                title={isFullScreen ? "Exit Full Screen" : "Full Screen"}
+              >
+                {isFullScreen ? (
+                  <>
+                    <Minimize2 className="w-3.5 h-3.5" />
+                    <span>🗜️ Exit • خروج</span>
+                  </>
+                ) : (
+                  <>
+                    <Maximize2 className="w-3.5 h-3.5" />
+                    <span>📺 Full Screen • ملء الشاشة</span>
+                  </>
+                )}
               </button>
             </div>
           </div>
 
           {/* Interactive drawing area with 4 lines & faint trace guideline in background */}
-          <div className="relative w-full h-44 bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-inner cursor-crosshair">
+          <div className={`relative w-full bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-inner cursor-crosshair transition-all ${
+            isFullScreen ? "flex-1 min-h-[250px]" : "h-44"
+          }`}>
             
             {/* 4 lines background inside drawing board */}
-            <div className="absolute inset-x-0 h-full flex flex-col justify-between py-8 pointer-events-none">
+            <div className={`absolute inset-x-0 h-full flex flex-col justify-center pointer-events-none ${
+              isFullScreen ? "gap-12" : "gap-6"
+            }`}>
               <div className="border-t border-rose-200 w-full"></div>
               <div className="border-t border-dashed border-sky-200 w-full"></div>
               <div className="border-t-2 border-indigo-300 w-full"></div>
@@ -446,8 +482,8 @@ function HandwritingCanvas({
 
             {/* Faint Trace Letters in Background */}
             <div className="absolute inset-0 flex items-center justify-center gap-14 pointer-events-none select-none opacity-15">
-              <span className="text-8xl font-cursive text-slate-500">{uppercase}</span>
-              <span className="text-8xl font-cursive text-slate-500">{lowercase}</span>
+              <span className={`font-cursive text-slate-500 transition-all ${isFullScreen ? "text-[14rem]" : "text-8xl"}`}>{uppercase}</span>
+              <span className={`font-cursive text-slate-500 transition-all ${isFullScreen ? "text-[14rem]" : "text-8xl"}`}>{lowercase}</span>
             </div>
 
             {/* Drawing Canvas */}

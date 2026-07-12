@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { 
   Volume2, Sparkles, Check, CheckCircle, RotateCcw, 
   Trash2, PenTool, Eraser, Lightbulb, Star, RefreshCw,
-  Trophy, BookOpen, Smile, Award
+  Trophy, BookOpen, Smile, Award, Maximize2, Minimize2
 } from "lucide-react";
 
 interface ClassroomInteractiveProps {
@@ -38,6 +38,7 @@ export default function ClassroomInteractive({ onSpeak, readingSpeed = 1.0 }: Cl
   const [isDrawing, setIsDrawing] = useState(false);
   const [canvasColor, setCanvasColor] = useState("#4f46e5");
   const [canvasTool, setCanvasTool] = useState<"pencil" | "eraser">("pencil");
+  const [isCanvasFullScreen, setIsCanvasFullScreen] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const lastPosRef = useRef({ x: 0, y: 0 });
@@ -123,17 +124,29 @@ export default function ClassroomInteractive({ onSpeak, readingSpeed = 1.0 }: Cl
     // Resize canvas based on client rect
     const resizeCanvas = () => {
       const rect = canvas.getBoundingClientRect();
-      canvas.width = rect.width;
-      canvas.height = rect.height;
-      
-      // Initialize context
-      const ctx = canvas.getContext("2d");
-      if (ctx) {
-        ctx.lineCap = "round";
-        ctx.lineJoin = "round";
-        ctx.strokeStyle = canvasColor;
-        ctx.lineWidth = canvasTool === "eraser" ? 24 : 6;
-        contextRef.current = ctx;
+      if (canvas.width !== rect.width || canvas.height !== rect.height) {
+        // Save current canvas content
+        const tempCanvas = document.createElement("canvas");
+        tempCanvas.width = canvas.width;
+        tempCanvas.height = canvas.height;
+        const tempCtx = tempCanvas.getContext("2d");
+        if (tempCtx) {
+          tempCtx.drawImage(canvas, 0, 0);
+        }
+
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+        
+        // Initialize context
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.lineCap = "round";
+          ctx.lineJoin = "round";
+          ctx.strokeStyle = canvasTool === "eraser" ? "#ffffff" : canvasColor;
+          ctx.lineWidth = canvasTool === "eraser" ? 24 : 6;
+          ctx.drawImage(tempCanvas, 0, 0, tempCanvas.width, tempCanvas.height, 0, 0, rect.width, rect.height);
+          contextRef.current = ctx;
+        }
       }
     };
 
@@ -141,13 +154,13 @@ export default function ClassroomInteractive({ onSpeak, readingSpeed = 1.0 }: Cl
     window.addEventListener("resize", resizeCanvas);
     
     // Trigger tiny timeout to let container render fully
-    const timer = setTimeout(resizeCanvas, 100);
+    const timer = setTimeout(resizeCanvas, 150);
 
     return () => {
       window.removeEventListener("resize", resizeCanvas);
       clearTimeout(timer);
     };
-  }, []);
+  }, [isCanvasFullScreen]);
 
   // Update canvas properties on tool or color change
   useEffect(() => {
@@ -682,13 +695,21 @@ export default function ClassroomInteractive({ onSpeak, readingSpeed = 1.0 }: Cl
           </div>
 
           {/* DRAWING BOARD CANVAS */}
-          <div className="flex flex-col gap-2.5 bg-slate-900 p-3 sm:p-4 rounded-[28px] border-4 border-slate-950 shadow-inner text-white">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
+          <div className={isCanvasFullScreen 
+            ? "fixed inset-0 z-50 bg-slate-950 p-6 flex flex-col gap-4 overflow-hidden text-white" 
+            : "flex flex-col gap-2.5 bg-slate-900 p-3 sm:p-4 rounded-[28px] border-4 border-slate-950 shadow-inner text-white"
+          }>
+            <div className="flex items-center justify-between border-b border-slate-800 pb-2.5 flex-wrap gap-2">
               <span className="text-xs font-black uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
                 <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
                 <span>Pencil Writing Board</span>
+                {isCanvasFullScreen && (
+                  <span className="bg-indigo-950 text-indigo-300 text-[10px] px-2.5 py-0.5 rounded-full font-black animate-pulse border border-indigo-800/40">
+                    Full Screen • وضع ملء الشاشة 📺
+                  </span>
+                )}
               </span>
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 flex-wrap">
                 {/* Pencil tool */}
                 <button
                   onClick={() => setCanvasTool("pencil")}
@@ -721,14 +742,39 @@ export default function ClassroomInteractive({ onSpeak, readingSpeed = 1.0 }: Cl
                   <Trash2 className="w-3.5 h-3.5" />
                   <span>Clear</span>
                 </button>
+                {/* Full-screen Toggle */}
+                <button
+                  onClick={() => setIsCanvasFullScreen(!isCanvasFullScreen)}
+                  className={`p-1.5 rounded-lg border text-[10px] font-bold flex items-center gap-1 cursor-pointer transition-all ${
+                    isCanvasFullScreen 
+                      ? "bg-rose-500 text-white border-rose-600 hover:bg-rose-600 shadow-xs" 
+                      : "bg-slate-800 border-slate-700 text-indigo-400 hover:bg-slate-700"
+                  }`}
+                >
+                  {isCanvasFullScreen ? (
+                    <>
+                      <Minimize2 className="w-3.5 h-3.5" />
+                      <span>🗜️ Exit • خروج</span>
+                    </>
+                  ) : (
+                    <>
+                      <Maximize2 className="w-3.5 h-3.5" />
+                      <span>📺 Full Screen</span>
+                    </>
+                  )}
+                </button>
               </div>
             </div>
 
             {/* Canvas Body */}
-            <div className="relative w-full h-36 bg-white rounded-2xl border border-slate-950 overflow-hidden cursor-crosshair">
+            <div className={`relative w-full bg-white rounded-2xl border border-slate-950 overflow-hidden cursor-crosshair ${
+              isCanvasFullScreen ? "flex-1 min-h-[250px]" : "h-36"
+            }`}>
               {/* Trace Guide Overlay */}
               <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none select-none">
-                <span className="font-serif text-slate-950 text-8xl font-black capitalize select-none">
+                <span className={`font-serif text-slate-950 font-black capitalize select-none transition-all ${
+                  isCanvasFullScreen ? "text-[16rem]" : "text-8xl"
+                }`}>
                   {currentSpellWord[0]}
                 </span>
               </div>

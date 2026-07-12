@@ -51,6 +51,7 @@ import DictationGame from "./components/DictationGame";
 import LessonGrammar from "./components/LessonGrammar";
 import InteractiveWord from "./components/InteractiveWord";
 import LessonIllustration from "./components/LessonIllustration";
+import LessonComicStrip from "./components/LessonComicStrip";
 import { getLessonImageUrl, getLessonCartoonDesc } from "./utils/lessonImages";
 import APKInstallPrompt from "./components/APKInstallPrompt";
 import UnitActivities from "./components/UnitActivities";
@@ -1711,8 +1712,19 @@ export default function App() {
                           <ClassroomInteractive onSpeak={(t) => speakText(t)} readingSpeed={readingSpeed} />
                         ) : (
                           <>
+                            {/* Interactive Cartoon Comic Strip (القصص المصورة) */}
+                            <LessonComicStrip 
+                              unitId={selectedUnit.id} 
+                              lessonId={selectedLesson.id} 
+                              selectedLesson={selectedLesson} 
+                              onSpeak={(t, v) => speakText(t)} 
+                              readingSpeed={readingSpeed} 
+                            />
+
                             {/* Contextual Educational Lesson Cartoon Illustration Card */}
-                            <LessonIllustration unitId={selectedUnit.id} lessonId={selectedLesson.id} title={selectedLesson.title} />
+                            <div className="mt-6">
+                              <LessonIllustration unitId={selectedUnit.id} lessonId={selectedLesson.id} title={selectedLesson.title} />
+                            </div>
 
                         {/* Interactive Word Reader Guidance Banner */}
                         {(selectedLesson.type === "song" || selectedLesson.type === "vocab" || selectedLesson.type === "conversation" || selectedLesson.type === "phonics") && (
