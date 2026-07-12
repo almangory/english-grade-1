@@ -283,7 +283,7 @@ app.post("/api/translate", async (req, res) => {
   // 2. Fallback to Gemini if Google Translate fails
   if (ai) {
     try {
-      const prompt = `Translate the English word or short phrase "${cleanText}" into clear, simple Arabic suitable for a Grade 9 Sudanese student learning English. Return ONLY the Arabic translation itself, with absolutely no additional text, explanation, punctuation, or wrapper.`;
+      const prompt = `Translate the English word or short phrase "${cleanText}" into clear, simple Arabic suitable for a Grade 1 Sudanese student learning English. Return ONLY the Arabic translation itself, with absolutely no additional text, explanation, punctuation, or wrapper.`;
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash",
         contents: [{ parts: [{ text: prompt }] }],
@@ -329,7 +329,7 @@ app.post("/api/chat", async (req, res) => {
       parts: [{ text: h.text }],
     }));
 
-    const systemInstruction = `You are ${character}, a friendly Sudanese Grade 9 Intermediate (Grade 9) student from the New SMILE English curriculum for Sudan.
+    const systemInstruction = `You are ${character}, a friendly Sudanese Grade 1 Intermediate (Grade 1) student from the New SMILE English curriculum for Sudan.
 You speak clear, correct English suited for intermediate school students (13-15 years old) to help them practice and learn.
 Encourage the student to practice, use simple but clear sentences, correct their spelling/grammar gently, and keep answers under 2 sentences. Include friendly cheerful comments like "Excellent!", "Splendid work!", or "Keep it up!"`;
 
@@ -367,7 +367,7 @@ const startServer = async () => {
   }
 
   app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Pupil SMILE English Grade 9 Server running on http://localhost:${PORT}`);
+    console.log(`Pupil SMILE English Grade 1 Server running on http://localhost:${PORT}`);
   });
 };
 
