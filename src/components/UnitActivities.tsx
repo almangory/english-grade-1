@@ -141,6 +141,7 @@ function HandwritingCanvas({
   const [hasDrawn, setHasDrawn] = useState(false);
   const [typedVal, setTypedVal] = useState("");
   const [isFullScreen, setIsFullScreen] = useState(false);
+  const [showGuides, setShowGuides] = useState(false);
 
   const clearCanvas = () => {
     const canvas = canvasRef.current;
@@ -442,6 +443,18 @@ function HandwritingCanvas({
                 <span>🧹 Clear</span>
               </button>
               <button
+                onClick={() => setShowGuides(!showGuides)}
+                className={`p-2 rounded-xl border text-[11px] font-bold flex items-center gap-1 cursor-pointer transition-all ${
+                  showGuides 
+                    ? "bg-amber-100 hover:bg-amber-200 border-amber-300 text-amber-900 shadow-xs" 
+                    : "bg-white hover:bg-slate-100 border-slate-200 text-slate-600"
+                }`}
+                title="Writing Directions • اتجاهات الكتابة"
+              >
+                <span>💡 {showGuides ? "Hide Guides • إخفاء الإرشادات" : "Show Guides • الإرشادات"}</span>
+              </button>
+
+              <button
                 onClick={() => setIsFullScreen(!isFullScreen)}
                 className={`p-2 rounded-xl border text-[11px] font-bold flex items-center gap-1.5 cursor-pointer transition-all ${
                   isFullScreen 
@@ -465,6 +478,57 @@ function HandwritingCanvas({
             </div>
           </div>
 
+          {/* Kid-friendly Writing Direction Guides Bar (Now positioned outside of the drawing canvas to prevent blocking!) */}
+          {showGuides && (
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="grid grid-cols-1 sm:grid-cols-2 gap-3 bg-indigo-50/70 p-3.5 rounded-2xl border border-indigo-100 text-left relative"
+            >
+              <div>
+                <span className="text-[10px] font-black uppercase tracking-wider text-indigo-800 flex items-center gap-1.5 mb-1.5">
+                  <span className="bg-indigo-500 text-white w-4 h-4 rounded-full flex items-center justify-center font-black text-[9px] border border-indigo-400">A</span>
+                  <span>Capital Letter ({uppercase}):</span>
+                </span>
+                <div className="flex flex-col gap-1">
+                  {guides.capital.map((step, idx) => {
+                    const arrow = step.match(/[⬇➔↙↗↘⬆⬅↺⤾⤿]/)?.[0] || "➔";
+                    return (
+                      <div key={idx} className="flex items-center gap-2 bg-white/90 border border-indigo-100 px-2.5 py-1 rounded-xl text-[10px] font-extrabold text-slate-700 shadow-2xs">
+                        <span className="w-4.5 h-4.5 rounded-full bg-indigo-500 border border-indigo-400 text-white flex items-center justify-center text-[10px] font-black shrink-0 shadow-3xs animate-bounce" style={{ animationDelay: `${idx * 200}ms` }}>
+                          {arrow}
+                        </span>
+                        <span className="text-indigo-900 font-bold text-[9px] uppercase tracking-wider bg-indigo-50 px-1 py-0.5 rounded">#{idx+1}</span>
+                        <span className="leading-tight">{step}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div>
+                <span className="text-[10px] font-black uppercase tracking-wider text-pink-800 flex items-center gap-1.5 mb-1.5">
+                  <span className="bg-pink-500 text-white w-4 h-4 rounded-full flex items-center justify-center font-black text-[9px] border border-pink-400">a</span>
+                  <span>Small Letter ({lowercase}):</span>
+                </span>
+                <div className="flex flex-col gap-1">
+                  {guides.small.map((step, idx) => {
+                    const arrow = step.match(/[⬇➔↙↗↘⬆⬅↺⤾⤿]/)?.[0] || "➔";
+                    return (
+                      <div key={idx} className="flex items-center gap-2 bg-white/90 border border-pink-100 px-2.5 py-1 rounded-xl text-[10px] font-extrabold text-slate-700 shadow-2xs">
+                        <span className="w-4.5 h-4.5 rounded-full bg-pink-500 border border-pink-400 text-white flex items-center justify-center text-[10px] font-black shrink-0 shadow-3xs animate-bounce" style={{ animationDelay: `${(idx + guides.capital.length) * 200}ms` }}>
+                          {arrow}
+                        </span>
+                        <span className="text-pink-900 font-bold text-[9px] uppercase tracking-wider bg-pink-50 px-1 py-0.5 rounded">#{idx+1}</span>
+                        <span className="leading-tight">{step}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </motion.div>
+          )}
+
           {/* Interactive drawing area with 4 lines & faint trace guideline in background */}
           <div className={`relative w-full bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-inner cursor-crosshair transition-all ${
             isFullScreen ? "flex-1 min-h-[250px]" : "h-44"
@@ -480,49 +544,10 @@ function HandwritingCanvas({
               <div className="border-t border-rose-200 w-full"></div>
             </div>
 
-            {/* Faint Trace Letters in Background */}
-            <div className="absolute inset-0 flex items-center justify-center gap-14 pointer-events-none select-none opacity-15">
+            {/* Faint Trace Letters in Background (With higher opacity 25% so the student can see them extremely clearly!) */}
+            <div className="absolute inset-0 flex items-center justify-center gap-14 pointer-events-none select-none opacity-25">
               <span className={`font-cursive text-slate-500 transition-all ${isFullScreen ? "text-[14rem]" : "text-8xl"}`}>{uppercase}</span>
               <span className={`font-cursive text-slate-500 transition-all ${isFullScreen ? "text-[14rem]" : "text-8xl"}`}>{lowercase}</span>
-            </div>
-
-            {/* Kid-friendly Writing Direction Arrow Guides Overlay */}
-            <div className="absolute inset-0 flex justify-between items-center px-4 sm:px-12 pointer-events-none select-none z-10">
-              {/* Capital Letter Guides */}
-              <div className="flex flex-col items-center gap-1 bg-slate-900/80 text-white px-2 py-1.5 rounded-xl border border-slate-700/60 shadow-md">
-                <span className="text-[8px] font-black uppercase tracking-wider text-slate-400">Capital</span>
-                <div className="flex gap-1">
-                  {guides.capital.map((step, idx) => {
-                    const arrow = step.match(/[⬇➔↙↗↘⬆⬅↺⤾⤿]/)?.[0] || "➔";
-                    return (
-                      <div key={idx} className="flex flex-col items-center">
-                        <span className="text-[7px] font-bold text-indigo-300 leading-none">#{idx+1}</span>
-                        <span className="w-5 h-5 rounded-full bg-indigo-500 border border-indigo-400 text-white flex items-center justify-center text-[10px] font-black shadow-xs animate-bounce" style={{ animationDelay: `${idx * 200}ms` }}>
-                          {arrow}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Small Letter Guides */}
-              <div className="flex flex-col items-center gap-1 bg-slate-900/80 text-white px-2 py-1.5 rounded-xl border border-slate-700/60 shadow-md">
-                <span className="text-[8px] font-black uppercase tracking-wider text-slate-400">Small</span>
-                <div className="flex gap-1">
-                  {guides.small.map((step, idx) => {
-                    const arrow = step.match(/[⬇➔↙↗↘⬆⬅↺⤾⤿]/)?.[0] || "➔";
-                    return (
-                      <div key={idx} className="flex flex-col items-center">
-                        <span className="text-[7px] font-bold text-pink-300 leading-none">#{idx+1}</span>
-                        <span className="w-5 h-5 rounded-full bg-pink-500 border border-pink-400 text-white flex items-center justify-center text-[10px] font-black shadow-xs animate-bounce" style={{ animationDelay: `${(idx + guides.capital.length) * 200}ms` }}>
-                          {arrow}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
             </div>
 
             {/* Drawing Canvas */}
