@@ -222,13 +222,35 @@ function HandwritingCanvas({
     
     const handleResize = () => {
       const rect = canvas.getBoundingClientRect();
-      canvas.width = rect.width;
-      canvas.height = rect.height;
+      // Only set and draw if size actually changed to avoid unnecessary clears
+      if (canvas.width !== rect.width || canvas.height !== rect.height) {
+        // Save current canvas content
+        const tempCanvas = document.createElement("canvas");
+        tempCanvas.width = canvas.width;
+        tempCanvas.height = canvas.height;
+        const tempCtx = tempCanvas.getContext("2d");
+        if (tempCtx) {
+          tempCtx.drawImage(canvas, 0, 0);
+        }
+
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+
+        // Restore content
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(tempCanvas, 0, 0, tempCanvas.width, tempCanvas.height, 0, 0, rect.width, rect.height);
+        }
+      }
     };
     
     handleResize();
+    window.addEventListener("resize", handleResize);
     const timer = setTimeout(handleResize, 150);
-    return () => clearTimeout(timer);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      clearTimeout(timer);
+    };
   }, [letter]);
 
   const guides = strokeGuides[lowercase] || {
@@ -261,7 +283,7 @@ function HandwritingCanvas({
       </div>
 
       {/* Main Handwriting Panels */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
         
         {/* LEFT PANEL: STUDY BOOK MODEL */}
         <div className="flex flex-col gap-4 p-5 bg-gradient-to-br from-indigo-50/40 to-sky-50/40 rounded-2xl border border-indigo-100">
@@ -330,7 +352,7 @@ function HandwritingCanvas({
             <h5 className="font-black text-xs uppercase tracking-wider text-indigo-950 flex items-center gap-1.5">
               <span>Pencil Practice Board ✏️</span>
             </h5>
-            <div className="flex gap-1">
+            <div className="flex flex-wrap gap-1">
               <button
                 onClick={() => setTool("pencil")}
                 className={`p-1.5 rounded-lg border text-[11px] font-bold flex items-center gap-1 cursor-pointer transition-all ${
@@ -931,7 +953,13 @@ export default function UnitActivities({
                       : "bg-slate-50 hover:bg-slate-100 border-slate-300"
                 }`}
               >
-                <span className="text-5xl">{w.img}</span>
+                {w.img === "board" ? (
+                  <div className="w-16 h-10 bg-emerald-800 border-2 border-amber-800 rounded-sm shadow-xs flex items-center justify-center relative my-1">
+                    <span className="text-[10px] font-mono font-bold text-white/90">ABC</span>
+                  </div>
+                ) : (
+                  <span className="text-5xl">{w.img}</span>
+                )}
                 {isMatched && (
                   <span className="text-[10px] bg-emerald-500 text-white px-2 py-0.5 rounded-full font-black uppercase">
                     Matched ✓
@@ -1913,10 +1941,26 @@ export default function UnitActivities({
                     const selected = userInputAnswers[item.id];
                     const isCorrect = selected === item.correct;
                     return (
-                      <div key={item.id} className={`p-4 rounded-2xl border flex flex-col items-center gap-2.5 transition-all ${
+                      <div key={item.id} className={`p-4 rounded-2xl border flex flex-col items-center gap-3 transition-all ${
                         isCorrect ? "bg-emerald-50 border-emerald-300" : "bg-slate-50 border-slate-200"
                       }`}>
-                        <span className="text-base font-black text-slate-800">{item.word}</span>
+                        {/* Realistic vertical traffic light container */}
+                        <div className="w-14 py-3 px-2 bg-slate-800 rounded-2xl border border-slate-700 flex flex-col items-center gap-1.5 shadow-md">
+                          {/* Red light */}
+                          <div className={`w-5 h-5 rounded-full border border-black/40 transition-all ${
+                            item.id === "tl1" ? "bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.9)] scale-105" : "bg-red-950/70"
+                          }`} />
+                          {/* Yellow light */}
+                          <div className={`w-5 h-5 rounded-full border border-black/40 transition-all ${
+                            item.id === "tl2" ? "bg-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.9)] scale-105" : "bg-amber-950/70"
+                          }`} />
+                          {/* Green light */}
+                          <div className={`w-5 h-5 rounded-full border border-black/40 transition-all ${
+                            item.id === "tl3" ? "bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.9)] scale-105" : "bg-green-950/70"
+                          }`} />
+                        </div>
+
+                        <span className="text-base font-black text-slate-800 uppercase tracking-wide">{item.word}</span>
                         <div className="flex gap-2">
                           {[
                             { color: "red", emoji: "🔴" },
@@ -2054,7 +2098,7 @@ export default function UnitActivities({
 
             {/* Activity 3 */}
             {activeActivity === 2 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="flex flex-col gap-10">
                 {renderLetterTracing("t", "Ten", "", "🔟")}
                 {renderLetterTracing("u", "Up", "", "⬆️")}
               </div>
@@ -2152,6 +2196,25 @@ export default function UnitActivities({
                       <div key={item.id} className={`p-4 rounded-2xl border flex flex-col items-center gap-2.5 transition-all ${
                         isCorrect ? "bg-emerald-50 border-emerald-300" : "bg-slate-50 border-slate-200"
                       }`}>
+                        {/* Custom Drawing for counting questions */}
+                        {item.id === "count1" && (
+                          <div className="flex gap-2.5 items-center justify-center h-14 bg-indigo-50/50 px-4 py-2 rounded-xl border border-indigo-100/50 my-1 animate-pulse">
+                            <span className="text-3xl select-none">👁️</span>
+                            <span className="text-3xl select-none">👁️</span>
+                          </div>
+                        )}
+                        {item.id === "count2" && (
+                          <div className="flex gap-2.5 items-center justify-center h-14 bg-indigo-50/50 px-4 py-2 rounded-xl border border-indigo-100/50 my-1">
+                            <span className="text-3xl select-none">🦶</span>
+                            <span className="text-3xl select-none">🦶</span>
+                          </div>
+                        )}
+                        {item.id === "count3" && (
+                          <div className="flex gap-2.5 items-center justify-center h-14 bg-indigo-50/50 px-4 py-2 rounded-xl border border-indigo-100/50 my-1">
+                            <span className="text-3xl select-none">👃</span>
+                          </div>
+                        )}
+
                         <span className="text-base font-black text-slate-800">{item.question}</span>
                         <span className="text-[11px] text-slate-400 font-bold">{item.ar}</span>
                         <div className="flex gap-2">
@@ -2231,7 +2294,7 @@ export default function UnitActivities({
 
             {/* Activity 2 */}
             {activeActivity === 1 && renderReadAndNumber([
-              { id: "un5-1", word: "board", ar: "", img: "📋" },
+              { id: "un5-1", word: "board", ar: "", img: "board" },
               { id: "un5-2", word: "chair", ar: "", img: "🪑" },
               { id: "un5-3", word: "teacher", ar: "", img: "👩‍🏫" },
               { id: "un5-4", word: "door", ar: "", img: "🚪" }
@@ -2333,7 +2396,7 @@ export default function UnitActivities({
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-lg">
                   {[
                     { id: "hunt1", target: "Teacher", ar: "", correct: "👩‍🏫", choices: ["👩‍🏫", "🪑", "🚪"] },
-                    { id: "hunt2", target: "Desk", ar: "", correct: "✍️", choices: ["✍️", "🗑️", "💨"] },
+                    { id: "hunt2", target: "Desk", ar: "", correct: "desk", choices: ["desk", "🗑️", "💨"] },
                     { id: "hunt3", target: "Book", ar: "", correct: "📚", choices: ["📚", "📋", "👝"] }
                   ].map((item) => {
                     const selected = userInputAnswers[item.id];
@@ -2358,7 +2421,7 @@ export default function UnitActivities({
                                   speakText(`No, try again!`);
                                 }
                               }}
-                              className={`w-12 h-12 rounded-xl border text-2xl flex items-center justify-center transition-all cursor-pointer ${
+                              className={`w-12 h-12 rounded-xl border text-2xl flex items-center justify-center transition-all cursor-pointer overflow-hidden ${
                                 selected === choice
                                   ? isCorrect
                                     ? "bg-emerald-200 border-emerald-400 scale-105"
@@ -2366,7 +2429,21 @@ export default function UnitActivities({
                                   : "bg-white hover:bg-slate-100 border-slate-300"
                               }`}
                             >
-                              {choice}
+                              {choice === "desk" ? (
+                                <div className="flex flex-col items-center justify-center relative w-8 h-8">
+                                  {/* Desk top */}
+                                  <div className="w-8 h-1.5 bg-amber-600 rounded-sm shadow-xs relative" />
+                                  {/* Desk drawer body */}
+                                  <div className="w-6 h-1.5 bg-amber-700 -mt-0.5" />
+                                  {/* Desk legs */}
+                                  <div className="flex justify-between w-6 px-1 h-3">
+                                    <div className="w-0.5 h-full bg-amber-850 rounded-b-sm" />
+                                    <div className="w-0.5 h-full bg-amber-850 rounded-b-sm" />
+                                  </div>
+                                </div>
+                              ) : (
+                                choice
+                              )}
                             </button>
                           ))}
                         </div>
@@ -2401,7 +2478,41 @@ export default function UnitActivities({
                       <div key={item.id} className={`p-4 rounded-2xl border flex flex-col items-center gap-2.5 transition-all ${
                         isCorrect ? "bg-emerald-50 border-emerald-300" : "bg-slate-50 border-slate-200"
                       }`}>
-                        <span className="text-4xl">{item.emoji}</span>
+                        {/* Custom Drawing/Visual to match the preposition question */}
+                        {item.id === "prep1" ? (
+                          <div className="relative w-24 h-20 bg-gradient-to-br from-indigo-50 to-sky-50 rounded-2xl border border-indigo-100 flex items-center justify-center shadow-xs overflow-hidden">
+                            {/* Pencil Case */}
+                            <span className="text-4xl select-none z-10 transform translate-y-2">👝</span>
+                            {/* Pencil inside */}
+                            <span className="text-xl select-none absolute z-20 top-4 left-9 transform rotate-12 animate-pulse">✏️</span>
+                          </div>
+                        ) : item.id === "prep2" ? (
+                          <div className="relative w-24 h-20 bg-gradient-to-br from-indigo-50 to-sky-50 rounded-2xl border border-indigo-100 flex flex-col items-center justify-center shadow-xs overflow-hidden">
+                            {/* Book on top */}
+                            <span className="text-2xl select-none z-20 transform translate-y-3 animate-bounce">📖</span>
+                            {/* Wooden Board/Desk */}
+                            <div className="w-12 h-1.5 bg-amber-600 rounded-sm z-10 transform translate-y-2" />
+                            {/* Table legs */}
+                            <div className="flex justify-between w-10 h-3 z-10 transform translate-y-2">
+                              <div className="w-0.5 h-full bg-amber-850" />
+                              <div className="w-0.5 h-full bg-amber-850" />
+                            </div>
+                          </div>
+                        ) : item.id === "prep3" ? (
+                          <div className="relative w-24 h-20 bg-gradient-to-br from-indigo-50 to-sky-50 rounded-2xl border border-indigo-100 flex flex-col items-center justify-center shadow-xs overflow-hidden">
+                            {/* Wooden Board/Desk */}
+                            <div className="w-12 h-1.5 bg-amber-600 rounded-sm z-10 transform translate-y-1" />
+                            {/* Table legs */}
+                            <div className="flex justify-between w-10 h-3 z-10 transform translate-y-1">
+                              <div className="w-0.5 h-full bg-amber-850" />
+                              <div className="w-0.5 h-full bg-amber-850" />
+                            </div>
+                            {/* Ball underneath */}
+                            <span className="text-2xl select-none z-20 transform -translate-y-1.5 animate-pulse">⚽</span>
+                          </div>
+                        ) : (
+                          <span className="text-4xl">{item.emoji}</span>
+                        )}
                         <span className="text-xs font-black text-center text-slate-800 leading-tight min-h-[32px] flex items-center justify-center">{item.question}</span>
                         <span className="text-[10px] text-slate-400 font-bold">{item.ar}</span>
                         <div className="flex gap-2">

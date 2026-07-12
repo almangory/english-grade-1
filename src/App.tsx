@@ -1710,7 +1710,7 @@ export default function App() {
                         <LessonIllustration unitId={selectedUnit.id} lessonId={selectedLesson.id} title={selectedLesson.title} />
 
                         {/* Interactive Word Reader Guidance Banner */}
-                        {(selectedLesson.type === "song" || selectedLesson.type === "vocab" || selectedLesson.type === "conversation") && (
+                        {(selectedLesson.type === "song" || selectedLesson.type === "vocab" || selectedLesson.type === "conversation" || selectedLesson.type === "phonics") && (
                           <div className="bg-gradient-to-r from-sky-50 to-indigo-50 border border-indigo-100 rounded-2xl p-3 flex items-center gap-2.5 text-xs font-bold text-indigo-900 justify-center shadow-sm">
                             <span className="text-base animate-pulse">🔊</span>
                             <span className="text-center">
@@ -1720,10 +1720,10 @@ export default function App() {
                         )}
 
                         {/* Lesson Song chant / Reading text layout */}
-                        {(selectedLesson.type === "song" || selectedLesson.type === "vocab") && selectedLesson.content.songText && (
+                        {(selectedLesson.type === "song" || selectedLesson.type === "vocab" || selectedLesson.type === "phonics") && selectedLesson.content.songText && (
                           <div className="bg-indigo-50 p-6 sm:p-8 rounded-[32px] border-b-4 border-r-4 border-indigo-200 flex flex-col items-center text-center gap-5">
                             <span className="text-5xl animate-bounce">
-                              {selectedLesson.type === "song" ? "🎵" : "📖"}
+                              {selectedLesson.type === "song" ? "🎵" : selectedLesson.type === "phonics" ? "🗣️" : "📖"}
                             </span>
                             <div className="max-w-2xl mx-auto text-left w-full">
                               {selectedLesson.content.songText.split("\n").map((line, idx) => {

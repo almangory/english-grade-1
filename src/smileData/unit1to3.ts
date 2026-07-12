@@ -119,7 +119,15 @@ export const units1to3: UnitItem[] = [
         title: "Lesson 8: Phonics Song",
         type: "phonics",
         content: {
-          songText: "a is in apple. b is in bed.\nc is in cat. d is in desk.\ne is in egg. f is in flag.\ng is in gate. h is in hat.\ni is in insect. j is in jam.\nk is in kick. l is in lamp."
+          songText: "a is in apple. b is in bed.\nc is in cat. d is in desk.\ne is in egg. f is in flag.\ng is in gate. h is in hat.\ni is in insect. j is in jam.\nk is in kick. l is in lamp.",
+          letters: ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"],
+          games: [
+            {
+              question: "Which letter makes the sound of /a/ in 'apple'?",
+              answers: ["a", "b", "c", "d"],
+              correctAnswer: "a"
+            }
+          ]
         }
       }
     ]
@@ -242,7 +250,15 @@ export const units1to3: UnitItem[] = [
         title: "Lesson 8: Phonics (m to z)",
         type: "phonics",
         content: {
-          songText: "m is in man. n is in neck.\no is in on. p is in pen.\nq is in quiet. r is in red.\ns is in sun. t is in ten.\nu is in up. v is in van.\nw is in window. x is in box.\ny is in yellow. z is in zoo."
+          songText: "m is in man. n is in neck.\no is in on. p is in pen.\nq is in quiet. r is in red.\ns is in sun. t is in ten.\nu is in up. v is in van.\nw is in window. x is in box.\ny is in yellow. z is in zoo.",
+          letters: ["m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"],
+          games: [
+            {
+              question: "Which letter makes the sound of /m/ in 'man'?",
+              answers: ["m", "n", "o", "p"],
+              correctAnswer: "m"
+            }
+          ]
         }
       }
     ]
