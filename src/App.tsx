@@ -54,6 +54,7 @@ import LessonIllustration from "./components/LessonIllustration";
 import { getLessonImageUrl, getLessonCartoonDesc } from "./utils/lessonImages";
 import APKInstallPrompt from "./components/APKInstallPrompt";
 import UnitActivities from "./components/UnitActivities";
+import ClassroomInteractive from "./components/ClassroomInteractive";
 
 interface SudaneseCharacter {
   avatar: string;
@@ -1706,8 +1707,12 @@ export default function App() {
                           </div>
                         </div>
 
-                        {/* Contextual Educational Lesson Cartoon Illustration Card */}
-                        <LessonIllustration unitId={selectedUnit.id} lessonId={selectedLesson.id} title={selectedLesson.title} />
+                        {selectedUnit.id === 5 && selectedLesson.id === 1 ? (
+                          <ClassroomInteractive onSpeak={(t) => speakText(t)} readingSpeed={readingSpeed} />
+                        ) : (
+                          <>
+                            {/* Contextual Educational Lesson Cartoon Illustration Card */}
+                            <LessonIllustration unitId={selectedUnit.id} lessonId={selectedLesson.id} title={selectedLesson.title} />
 
                         {/* Interactive Word Reader Guidance Banner */}
                         {(selectedLesson.type === "song" || selectedLesson.type === "vocab" || selectedLesson.type === "conversation" || selectedLesson.type === "phonics") && (
@@ -1867,6 +1872,8 @@ export default function App() {
                               </div>
                             )}
                           </div>
+                        )}
+                          </>
                         )}
 
                         {/* Dynamic Grammar rules extraction & interactive Quiz at the end of each lesson */}

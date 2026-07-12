@@ -216,6 +216,54 @@ function HandwritingCanvas({
     isDrawingRef.current = false;
   };
 
+  const startDrawingRef = useRef(startDrawing);
+  const drawRef = useRef(draw);
+  const stopDrawingRef = useRef(stopDrawing);
+
+  useEffect(() => {
+    startDrawingRef.current = startDrawing;
+    drawRef.current = draw;
+    stopDrawingRef.current = stopDrawing;
+  });
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.cancelable) {
+        e.preventDefault();
+      }
+      startDrawingRef.current(e);
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.cancelable) {
+        e.preventDefault();
+      }
+      drawRef.current(e);
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (e.cancelable) {
+        e.preventDefault();
+      }
+      stopDrawingRef.current();
+    };
+
+    canvas.addEventListener("touchstart", handleTouchStart, { passive: false });
+    canvas.addEventListener("touchmove", handleTouchMove, { passive: false });
+    canvas.addEventListener("touchend", handleTouchEnd, { passive: false });
+    canvas.addEventListener("touchcancel", handleTouchEnd, { passive: false });
+
+    return () => {
+      canvas.removeEventListener("touchstart", handleTouchStart);
+      canvas.removeEventListener("touchmove", handleTouchMove);
+      canvas.removeEventListener("touchend", handleTouchEnd);
+      canvas.removeEventListener("touchcancel", handleTouchEnd);
+    };
+  }, []);
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -409,9 +457,6 @@ function HandwritingCanvas({
               onMouseMove={draw}
               onMouseUp={stopDrawing}
               onMouseLeave={stopDrawing}
-              onTouchStart={startDrawing}
-              onTouchMove={draw}
-              onTouchEnd={stopDrawing}
               className="absolute inset-0 w-full h-full z-10"
             />
 
