@@ -1,5 +1,5 @@
 /**
- * Utility to map Sudanese SMILE Syllabus Grade 10 (Book 6) units and lessons 
+ * Utility to map Sudanese SMILE Syllabus Grade 1 (Book 1) units and lessons 
  * to high-quality, cartoon, watercolor, or flat illustration educational images.
  * Tailored beautifully to represent Sudanese culture, geography, and real-life learning context.
  */
@@ -123,7 +123,7 @@ const LESSON_IMAGE_MAP: Record<string, string> = {
   "12-5": "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?auto=format&fit=crop&w=800&q=80", // River Crossing Logic Puzzle (Farmer crossing with fox/goat/straw)
   "12-6": "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=800&q=80", // Trade (Sudanese exports agricultural percentages)
   "12-7": "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&w=800&q=80", // Solar Panels & Electric Cars (Green transport future)
-  "12-8": "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80", // Revision: The End! (Finishing Grade 10 secondary SMILE)
+  "12-8": "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80", // Revision: The End! (Finishing Grade 1 secondary SMILE)
 };
 
 const LESSON_SUDANESE_CARTOON_DESC: Record<string, string> = {

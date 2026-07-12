@@ -69,13 +69,63 @@ export default function LessonComicStrip({
     return CHARACTERS[trimmed] || CHARACTERS["General"];
   };
 
+  // Dynamic Dialogue Generator for Comic Stories
+  const getLessonDialogue = () => {
+    if (selectedLesson?.content?.dialogue && selectedLesson.content.dialogue.length > 0) {
+      return selectedLesson.content.dialogue;
+    }
+
+    const title = (selectedLesson?.title || "").toUpperCase();
+    const type = selectedLesson?.type || "vocab";
+    const letters = selectedLesson?.content?.letters || [];
+    const vocabulary = selectedLesson?.content?.vocabulary || [];
+
+    if (title.includes("NUMBER") || title.includes("COUNT") || title.includes("1 TO 4") || title.includes("5 TO 10")) {
+      return [
+        { speaker: "Badr", text: "Look Ahmed! Let's play a counting game. I have 1 apple 🍎 and 2 bags 🎒!" },
+        { speaker: "Ahmed", text: "Awesome, Badr! And I see 3 cute cats 🐱 and 4 doors 🚪! One, two, three, four!" },
+        { speaker: "Fatma", text: "Excellent counting, boys! We can also count up to 10! Five, six, seven, eight, nine, ten! 🔢" }
+      ];
+    }
+
+    if (type === "phonics" || letters.length > 0 || title.includes("SOUND") || title.includes("PHONICS") || title.includes("LETTER")) {
+      const letterStr = letters.length > 0 ? letters.join(" and ") : "our letters";
+      return [
+        { speaker: "Cathy", text: `Hello Eddie! Do you know how to write the letters: ${letterStr}? 📝` },
+        { speaker: "Eddie", text: `Yes, Cathy! We draw them on the four workbook lines. Follow the yellow and blue bounce arrows! ✏️` },
+        { speaker: "Teacher", text: `Superb! Remember kids: B is for Bag, and A is for Apple! Let's chant their sounds! 🗣️` }
+      ];
+    }
+
+    if (type === "song" || title.includes("SONG") || title.includes("CHANT") || title.includes("SING")) {
+      return [
+        { speaker: "Hiba", text: "I love singing! Let's clap our hands 👏 and sing this beautiful Smile song together!" },
+        { speaker: "Hamad", text: "Yes! Sing along with us and point to the words! It makes our English super strong! 🎶" }
+      ];
+    }
+
+    if (vocabulary.length > 0) {
+      const firstWords = vocabulary.slice(0, 2).map((v: any) => v.word).join(" and ");
+      return [
+        { speaker: "Fatma", text: `Hey Cathy! Let's practice speaking our new lesson words today: ${firstWords || "Smile words"}! 🗣️` },
+        { speaker: "Cathy", text: `I love learning words! Let's tap on the cards below to hear Badr, Ahmed and Mr Gamar say them! 🌟` }
+      ];
+    }
+
+    // Default high-quality fallback
+    return [
+      { speaker: "Badr", text: "Welcome to our English Smile lesson! Let's explore together! 🌍" },
+      { speaker: "Ahmed", text: "Yes, Badr! Let's read, speak, and complete the fun workbook drawing! 🎨" }
+    ];
+  };
+
   // RENDER SPEECH BUBBLE COMIC PANELS
   const renderComicDialogues = () => {
-    const dialogue = selectedLesson?.content?.dialogue || [];
+    const dialogue = getLessonDialogue();
     if (dialogue.length === 0) return null;
 
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full my-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full my-4">
         {dialogue.map((item: any, idx: number) => {
           const char = getChar(item.speaker);
           const isSelected = activeBubbleIdx === idx;
@@ -87,35 +137,37 @@ export default function LessonComicStrip({
                 setActiveBubbleIdx(idx);
                 speakText(`${item.speaker} says: ${item.text}`);
               }}
-              className={`p-5 rounded-[24px] border-3 shadow-md flex items-start gap-4 cursor-pointer transition-all ${
+              className={`p-5 rounded-[24px] border-3 shadow-md flex flex-col justify-between cursor-pointer transition-all ${
                 isSelected 
                   ? "bg-yellow-50 border-yellow-400 ring-4 ring-yellow-200/50" 
                   : "bg-white border-slate-900/10 hover:border-indigo-400"
               }`}
               id={`comic-bubble-${idx}`}
             >
-              {/* Character Avatar */}
-              <div className={`w-14 h-14 rounded-full border-2 flex items-center justify-center text-3xl shrink-0 shadow-inner ${char.bg}`}>
-                {char.avatar}
-              </div>
+              <div className="flex items-start gap-3">
+                {/* Character Avatar */}
+                <div className={`w-12 h-12 rounded-full border-2 flex items-center justify-center text-2xl shrink-0 shadow-inner ${char.bg}`}>
+                  {char.avatar}
+                </div>
 
-              {/* Text content & balloon shape */}
-              <div className="flex-grow text-left relative">
-                <span className={`block text-[11px] font-black uppercase tracking-wider ${char.color} mb-1`}>
-                  {char.name}
-                </span>
-                
-                {/* Comic speech bubble container */}
-                <div className="bg-slate-50/50 px-3.5 py-2.5 rounded-2xl border border-slate-100 text-xs sm:text-sm font-bold text-slate-800 leading-relaxed shadow-sm">
-                  {item.text}
-                </div>
-                
-                <div className="mt-2.5 flex items-center justify-between text-[10px] text-slate-400 font-extrabold uppercase tracking-widest">
-                  <span className="flex items-center gap-1.5 text-indigo-600">
-                    <Volume2 className="w-3.5 h-3.5 animate-pulse" /> Click to Hear
+                {/* Text content & balloon shape */}
+                <div className="flex-grow text-left relative">
+                  <span className={`block text-[11px] font-black uppercase tracking-wider ${char.color} mb-1`}>
+                    {char.name}
                   </span>
-                  <span>Sudan Pupil Book</span>
+                  
+                  {/* Comic speech bubble container */}
+                  <div className="bg-slate-50/50 px-3.5 py-2.5 rounded-2xl border border-slate-100 text-xs font-bold text-slate-800 leading-relaxed shadow-sm">
+                    {item.text}
+                  </div>
                 </div>
+              </div>
+              
+              <div className="mt-4 pt-2 border-t border-dashed border-slate-100 flex items-center justify-between text-[10px] text-slate-400 font-extrabold uppercase tracking-widest">
+                <span className="flex items-center gap-1.5 text-indigo-600">
+                  <Volume2 className="w-3.5 h-3.5 animate-pulse" /> Click to Hear
+                </span>
+                <span>Sudan Pupil Book</span>
               </div>
             </motion.div>
           );
@@ -398,36 +450,82 @@ export default function LessonComicStrip({
 
   // Fallback visual illustration panel (or extra point-and-say cards)
   const renderFallback = () => {
-    const wordCards = selectedLesson?.content?.songText 
-      ? selectedLesson.content.songText.replace("Words:\n", "").split(", ")
-      : [];
-    if (wordCards.length === 0 || wordCards[0] === "") return null;
-
+    const vocab = selectedLesson?.content?.vocabulary || [];
+    const letters = selectedLesson?.content?.letters || [];
+    const songText = selectedLesson?.content?.songText || "";
+    
     return (
-      <div className="bg-slate-50 p-4 sm:p-5 rounded-[28px] border-2 border-slate-100 text-left">
-        <span className="text-[10px] font-black uppercase tracking-widest text-indigo-600 block mb-3">
-          🎒 Vocabulary Point & Say
-        </span>
-        <div className="flex flex-wrap gap-2.5">
-          {wordCards.map((w: string, idx: number) => {
-            const cleaned = w.trim().replace(/^•\s*/, "");
-            const isClicked = clickedElements[`vocab-${cleaned}`];
-            return (
-              <motion.button
-                key={idx}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => markClicked(`vocab-${cleaned}`, `Vocabulary word. ${cleaned}`, 10)}
-                className={`px-4.5 py-2.5 bg-white border-2 border-slate-200 hover:border-indigo-500 rounded-xl text-xs sm:text-sm font-black uppercase tracking-wide flex items-center gap-2 cursor-pointer shadow-sm ${
-                  isClicked ? "bg-indigo-50 border-indigo-400" : ""
-                }`}
-              >
-                <span>🗣️</span>
-                <span>{cleaned}</span>
-              </motion.button>
-            );
-          })}
-        </div>
+      <div className="flex flex-col gap-6 w-full mt-2">
+        {/* Focus Letters */}
+        {letters.length > 0 && (
+          <div className="bg-white border-4 border-slate-900 rounded-[32px] p-5 shadow-sm text-left">
+            <h4 className="text-xs sm:text-sm font-black text-slate-950 uppercase tracking-wider flex items-center gap-2 mb-3">
+              <span className="bg-yellow-400 text-slate-950 w-7 h-7 rounded-full flex items-center justify-center font-black text-xs border-2 border-slate-900">✏️</span>
+              <span>Focus Letters • حروف الدرس:</span>
+            </h4>
+            <div className="flex gap-4 flex-wrap">
+              {letters.map((letItem: string) => (
+                <div key={letItem} className="flex items-center gap-3 bg-indigo-50 border-2 border-indigo-200 px-5 py-2.5 rounded-2xl shadow-xs">
+                  <span className="text-3xl font-black text-indigo-950 uppercase">{letItem}</span>
+                  <span className="text-2xl font-black text-indigo-500 lowercase">{letItem}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Vocabulary Cards */}
+        {vocab.length > 0 && (
+          <div className="bg-white border-4 border-slate-900 rounded-[32px] p-5 shadow-sm text-left">
+            <h4 className="text-xs sm:text-sm font-black text-slate-950 uppercase tracking-wider flex items-center gap-2 mb-4">
+              <span className="bg-pink-400 text-white w-7 h-7 rounded-full flex items-center justify-center font-black text-xs border-2 border-slate-900">🎒</span>
+              <span>Lesson Vocabulary • كلمات الدرس المصورة:</span>
+            </h4>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {vocab.map((item: any, idx: number) => {
+                const isClicked = clickedElements[`fallback-vocab-${item.id}`];
+                return (
+                  <motion.div
+                    key={item.id || idx}
+                    whileHover={{ scale: 1.05 }}
+                    onClick={() => markClicked(`fallback-vocab-${item.id}`, `Vocabulary word. ${item.word}`, 10)}
+                    className={`p-4 bg-slate-50 border-3 border-slate-950 rounded-[24px] flex flex-col items-center gap-2 cursor-pointer transition-all ${
+                      isClicked ? "bg-amber-50 border-amber-500 ring-2 ring-amber-200" : "hover:border-indigo-400"
+                    }`}
+                  >
+                    <div className="text-4xl bg-white w-14 h-14 rounded-2xl border-2 border-slate-100 flex items-center justify-center shadow-inner select-none">
+                      {item.image || "🍎"}
+                    </div>
+                    <div className="text-center">
+                      <span className="block text-xs font-black uppercase tracking-wider text-slate-800 leading-tight">{item.word}</span>
+                      <span className="text-[10px] font-black text-amber-600 leading-tight">{item.arabic}</span>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Song/Chant Panel */}
+        {songText && (
+          <div className="bg-gradient-to-br from-purple-50 to-indigo-50 border-4 border-purple-950/20 p-5 rounded-[32px] text-left shadow-xs">
+            <h4 className="text-xs sm:text-sm font-black text-purple-950 flex items-center gap-2 mb-3">
+              <span className="bg-purple-400 text-white w-7 h-7 rounded-full flex items-center justify-center font-black text-xs border-2 border-slate-900">🎵</span>
+              <span>Let's Chant! • أنشودة الدرس:</span>
+            </h4>
+            <div className="bg-white/90 border-2 border-purple-100 p-4 rounded-2xl font-mono text-xs sm:text-sm text-slate-800 leading-relaxed whitespace-pre-line shadow-inner max-h-52 overflow-y-auto">
+              {songText}
+            </div>
+            <button
+              onClick={() => speakText(`Let's sing! ${songText}`)}
+              className="mt-3 px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-bold text-xs flex items-center gap-2 cursor-pointer shadow-sm transition-all active:scale-95 w-fit"
+            >
+              <Volume2 className="w-4 h-4" />
+              <span>Sing Aloud • استمع للأنشودة</span>
+            </button>
+          </div>
+        )}
       </div>
     );
   };
@@ -478,18 +576,10 @@ export default function LessonComicStrip({
           <span>Interactive Cartoon Comic Dialogues (القصص المصورة):</span>
         </h3>
         
-        {selectedLesson?.content?.dialogue && selectedLesson.content.dialogue.length > 0 ? (
-          <>
-            <p className="text-xs font-bold text-slate-500 mt-[-4px] pl-9">
-              Tap the characters or speech bubbles to hear them speak in clear school audio!
-            </p>
-            {renderComicDialogues()}
-          </>
-        ) : (
-          <div className="bg-slate-50 border border-dashed border-slate-200 p-5 rounded-2xl text-center text-xs font-bold text-slate-400 flex items-center justify-center gap-2">
-            <span>📚 This lesson focuses on beautiful chanting and vocabulary words count!</span>
-          </div>
-        )}
+        <p className="text-xs font-bold text-slate-500 mt-[-4px] pl-9">
+          Tap the characters or speech bubbles to hear them speak in clear school audio!
+        </p>
+        {renderComicDialogues()}
 
         {/* CUSTOM LAYOUT BLOCK */}
         {getCustomRenderBlock()}

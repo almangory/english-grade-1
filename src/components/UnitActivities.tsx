@@ -486,6 +486,45 @@ function HandwritingCanvas({
               <span className={`font-cursive text-slate-500 transition-all ${isFullScreen ? "text-[14rem]" : "text-8xl"}`}>{lowercase}</span>
             </div>
 
+            {/* Kid-friendly Writing Direction Arrow Guides Overlay */}
+            <div className="absolute inset-0 flex justify-between items-center px-4 sm:px-12 pointer-events-none select-none z-10">
+              {/* Capital Letter Guides */}
+              <div className="flex flex-col items-center gap-1 bg-slate-900/80 text-white px-2 py-1.5 rounded-xl border border-slate-700/60 shadow-md">
+                <span className="text-[8px] font-black uppercase tracking-wider text-slate-400">Capital</span>
+                <div className="flex gap-1">
+                  {guides.capital.map((step, idx) => {
+                    const arrow = step.match(/[⬇➔↙↗↘⬆⬅↺⤾⤿]/)?.[0] || "➔";
+                    return (
+                      <div key={idx} className="flex flex-col items-center">
+                        <span className="text-[7px] font-bold text-indigo-300 leading-none">#{idx+1}</span>
+                        <span className="w-5 h-5 rounded-full bg-indigo-500 border border-indigo-400 text-white flex items-center justify-center text-[10px] font-black shadow-xs animate-bounce" style={{ animationDelay: `${idx * 200}ms` }}>
+                          {arrow}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Small Letter Guides */}
+              <div className="flex flex-col items-center gap-1 bg-slate-900/80 text-white px-2 py-1.5 rounded-xl border border-slate-700/60 shadow-md">
+                <span className="text-[8px] font-black uppercase tracking-wider text-slate-400">Small</span>
+                <div className="flex gap-1">
+                  {guides.small.map((step, idx) => {
+                    const arrow = step.match(/[⬇➔↙↗↘⬆⬅↺⤾⤿]/)?.[0] || "➔";
+                    return (
+                      <div key={idx} className="flex flex-col items-center">
+                        <span className="text-[7px] font-bold text-pink-300 leading-none">#{idx+1}</span>
+                        <span className="w-5 h-5 rounded-full bg-pink-500 border border-pink-400 text-white flex items-center justify-center text-[10px] font-black shadow-xs animate-bounce" style={{ animationDelay: `${(idx + guides.capital.length) * 200}ms` }}>
+                          {arrow}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
             {/* Drawing Canvas */}
             <canvas
               ref={canvasRef}

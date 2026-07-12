@@ -778,6 +778,55 @@ export default function ClassroomInteractive({ onSpeak, readingSpeed = 1.0 }: Cl
                   {currentSpellWord[0]}
                 </span>
               </div>
+
+              {/* Kid-friendly Writing Direction Arrow Guides Overlay */}
+              <div className="absolute bottom-2 right-2 pointer-events-none select-none z-10 flex flex-col items-center gap-1 bg-slate-900/80 text-white px-2 py-1.5 rounded-xl border border-slate-700/60 shadow-md">
+                <span className="text-[8px] font-black uppercase tracking-wider text-slate-400">Direction Guides</span>
+                <div className="flex gap-1">
+                  {(() => {
+                    const char = currentSpellWord[0] || "A";
+                    const c = char.toLowerCase();
+                    const dict: Record<string, string[]> = {
+                      a: ["↺", "↓"],
+                      b: ["⬇", "⤾"],
+                      c: ["↺"],
+                      d: ["↺", "⬇"],
+                      e: ["➔", "⤿"],
+                      f: ["⬇", "➔"],
+                      g: ["↺", "⤾"],
+                      h: ["⬇", "⤿"],
+                      i: ["⬇"],
+                      j: ["⬇", "↺"],
+                      k: ["⬇", "↙", "↘"],
+                      l: ["⬇"],
+                      m: ["⬇", "⤿", "⤿"],
+                      n: ["⬇", "⤿"],
+                      o: ["↺"],
+                      p: ["⬇", "⤾"],
+                      q: ["↺", "⬇"],
+                      r: ["⬇", "⤾"],
+                      s: ["⤿"],
+                      t: ["⬇", "➔"],
+                      u: ["⤿", "⬇"],
+                      v: ["↘", "↗"],
+                      w: ["↘", "↗", "↘", "↗"],
+                      x: ["↘", "↙"],
+                      y: ["↘", "↙"],
+                      z: ["➔", "↙", "➔"]
+                    };
+                    const arrows = dict[c] || ["➔"];
+                    return arrows.map((arrow, idx) => (
+                      <div key={idx} className="flex flex-col items-center">
+                        <span className="text-[7px] font-bold text-indigo-300 leading-none">#{idx+1}</span>
+                        <span className="w-5 h-5 rounded-full bg-indigo-500 border border-indigo-400 text-white flex items-center justify-center text-[10px] font-black shadow-xs animate-bounce" style={{ animationDelay: `${idx * 200}ms` }}>
+                          {arrow}
+                        </span>
+                      </div>
+                    ));
+                  })()}
+                </div>
+              </div>
+
               <canvas
                 ref={canvasRef}
                 onMouseDown={startDrawing}

@@ -11,7 +11,7 @@ interface InteractiveWordProps {
   speakText: any;
 }
 
-// Comprehensive lookup dictionary for Grade 10 SMILE book lessons
+// Comprehensive lookup dictionary for Grade 1 SMILE book lessons
 const ARABIC_GLOSSARY: Record<string, string> = {
   "famous": "مشهور",
   "scientists": "علماء",

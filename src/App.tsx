@@ -1439,7 +1439,7 @@ export default function App() {
                   </div>
 
                   <button
-                    onClick={() => speakText("Welcome to SMILE English, Grade 10 First Secondary student! As-salamu alaykum!", "Kore")}
+                    onClick={() => speakText("Welcome to SMILE English, Grade 1 First Secondary student! As-salamu alaykum!", "Kore")}
                     className="mt-1 w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs uppercase py-3 px-4 rounded-[16px] border-b-4 border-emerald-700 transition-all flex items-center justify-center gap-2 cursor-pointer transform active:translate-y-0.5"
                   >
                     <Volume2 className="w-4 h-4" />
@@ -1992,7 +1992,7 @@ export default function App() {
                         vocabMode === "dictionary" ? "text-teal-850" : "text-indigo-800"
                       }`}>
                         {vocabMode === "dictionary" 
-                          ? "Learn new words from Sudan's Grade 10 First Secondary book by clicking pronunciation options and hearing active examples!"
+                          ? "Learn new words from Sudan's Grade 1 First Secondary book by clicking pronunciation options and hearing active examples!"
                           : "Flip cards to reveal example sentences, listen to pronunciation, and sort words into 'Know It' or 'Need Practice' for efficient memorization!"}
                       </p>
                     </div>
@@ -2342,7 +2342,7 @@ export default function App() {
                             >
                               Quit Test 👋
                             </button>
-                            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">SMILE Grade 10 Exam</span>
+                            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">SMILE Grade 1 Exam</span>
                           </div>
                         </div>
                       );
@@ -2690,7 +2690,7 @@ export default function App() {
                 >
                   <div className="bg-gradient-to-r from-rose-500 to-orange-500 text-white p-6 rounded-[32px] border-b-6 border-r-6 border-rose-800/80">
                     <h3 className="text-xl font-black flex items-center gap-2 uppercase tracking-wide">
-                      📚 SMILE Grade 10 Syllabus Map
+                      📚 SMILE Grade 1 Syllabus Map
                     </h3>
                     <p className="text-xs text-rose-100 font-bold mt-1">
                       Explore the whole textbook here! Tap any unit to learn, play songs, and test your vocabulary instantly!
@@ -3287,10 +3287,10 @@ export default function App() {
                             
                             <div className="mt-4">
                               <h1 className="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight uppercase">
-                                National General Certificate Examination - Grade 10
+                                National General Certificate Examination - Grade 1
                               </h1>
                               <h2 className="text-md font-extrabold text-slate-700 mt-1">
-                                Subject: English Language (SMILE Series - Pupil's Book 6)
+                                Subject: English Language (SMILE Series - Pupil's Book 1)
                               </h2>
                               <div className="text-xs font-bold text-slate-500 mt-1 flex justify-center gap-6">
                                 <span>Time Allowed: 1 Hour 30 Minutes</span>
@@ -3592,7 +3592,7 @@ export default function App() {
                               {/* Simple Page 2 Header */}
                               <div className="border-b border-slate-300 pb-3 mb-5 text-center relative z-10" style={{ fontFamily: "Inter, sans-serif" }}>
                                 <div className="flex justify-between items-center text-[9px] font-bold text-slate-500 uppercase">
-                                  <span>National Certificate Exam - Grade 10</span>
+                                  <span>National Certificate Exam - Grade 1</span>
                                   <span className="font-extrabold text-indigo-900">ENGLISH LANGUAGE (PAGE 2)</span>
                                   <span>Republic of Sudan</span>
                                 </div>
@@ -3953,9 +3953,9 @@ export default function App() {
       {/* Sudan Modern Learning Pupil English Footer Credits */}
       <footer className="max-w-6xl w-full mx-auto mt-8 py-6 text-center text-sky-700/60 font-semibold border-t border-sky-100">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-3 text-xs uppercase tracking-wider font-extrabold px-4">
-          <p>© SMILE English • Grade 10 Interactive Companion</p>
+          <p>© SMILE English • Grade 1 Interactive Companion</p>
           <div className="flex gap-3">
-            <span className="text-sky-800">Pupil's Book 6</span>
+            <span className="text-sky-800">Pupil's Book 1</span>
             <span>•</span>
             <span className="text-sky-800">Sudan</span>
           </div>

@@ -559,7 +559,7 @@ export default function LessonIllustration({ unitId, lessonId, title }: LessonIl
   const details = ILLUSTRATION_DETAILS[key] || {
     emoji: "📖",
     arabicDesc: "رسم توضيحي تفاعلي لطلاب السودان بلمسات تعليمية مبهجة ومميزة.",
-    bullets: ["Exploring SMILE Book 6 curriculum lessons", "Interactive language exercises and activities", "Polished lesson summaries with vocabulary guides"]
+    bullets: ["Exploring SMILE Book 1 curriculum lessons", "Interactive language exercises and activities", "Polished lesson summaries with vocabulary guides"]
   };
 
   const theme = UNIT_THEMES[unitId] || { gradient: "from-indigo-500 to-purple-600", icon: BookOpen };
